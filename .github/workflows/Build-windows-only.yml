@@ -13,16 +13,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-gnu
 
-      - name: Cache Rust
+      - name: Cache
         uses: Swatinem/rust-cache@v2
 
-      - name: Install GCC (for linker)
+      - name: Install GCC
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -45,12 +47,12 @@ linker = '$gcc'
       - name: Build UI
         run: cargo build --release --target x86_64-pc-windows-gnu --features ui --bin mhrv-rs-ui
 
-      - name: Copy files to releases/
+      - name: Copy files to releases/ folder
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path releases | Out-Null
           
-          # پاک کردن فایل‌های قدیمی ویندوز
+          # حذف فایل‌های قدیمی
           Remove-Item releases/mhrv-rs*.exe, releases/run.bat -ErrorAction SilentlyContinue
           
           # کپی فایل‌های جدید
@@ -67,7 +69,7 @@ linker = '$gcc'
           git add releases/
           
           if git diff --cached --quiet; then
-            echo "No changes"
+            echo "No changes to commit"
             exit 0
           fi
           
