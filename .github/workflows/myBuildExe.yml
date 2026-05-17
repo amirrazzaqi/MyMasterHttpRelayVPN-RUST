@@ -14,7 +14,7 @@ on:
   #   branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-windows:
@@ -70,6 +70,37 @@ jobs:
           
           # ساخت ZIP نهایی
           Compress-Archive -Path "$outdir/*" -DestinationPath "mhrv-rs-windows-x86_64-v$ver.zip" -Force
+
+
+      - name: Copy files to releases/ folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          
+          # حذف فایل‌های قدیمی
+          Remove-Item releases/mhrv-rs*.exe, releases/run.bat -ErrorAction SilentlyContinue
+          
+          # کپی فایل‌های جدید
+          Copy-Item "target/x86_64-pc-windows-gnu/release/mhrv-rs.exe" -Destination "releases/mhrv-rs.exe"
+          Copy-Item "target/x86_64-pc-windows-gnu/release/mhrv-rs-ui.exe" -Destination "releases/mhrv-rs-ui.exe"
+          Copy-Item "assets/launchers/run.bat" -Destination "releases/run.bat" -ErrorAction SilentlyContinue
+
+      - name: Commit and Push to main
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          git add releases/
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "chore(releases): update Windows executables"
+          git push origin HEAD:main
+          
 
       - name: Upload Windows Executable
         uses: actions/upload-artifact@v4
