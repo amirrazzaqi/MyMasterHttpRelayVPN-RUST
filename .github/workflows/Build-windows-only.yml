@@ -52,10 +52,8 @@ linker = '$gcc'
         run: |
           New-Item -ItemType Directory -Force -Path releases | Out-Null
           
-          # حذف فایل‌های قدیمی
           Remove-Item releases/mhrv-rs*.exe, releases/run.bat -ErrorAction SilentlyContinue
           
-          # کپی فایل‌های جدید
           Copy-Item "target/x86_64-pc-windows-gnu/release/mhrv-rs.exe" -Destination "releases/mhrv-rs.exe"
           Copy-Item "target/x86_64-pc-windows-gnu/release/mhrv-rs-ui.exe" -Destination "releases/mhrv-rs-ui.exe"
           Copy-Item "assets/launchers/run.bat" -Destination "releases/run.bat" -ErrorAction SilentlyContinue
