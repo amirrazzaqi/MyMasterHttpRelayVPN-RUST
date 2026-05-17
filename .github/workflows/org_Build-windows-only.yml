@@ -1,4 +1,4 @@
-name: Build Windows Only → releases/
+name: org Build Windows Only
 
 on:
   workflow_dispatch:
