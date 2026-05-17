@@ -1,4 +1,4 @@
-name: Build Windows Only
+name: dashakh Build Windows Only
 
 on:
   workflow_dispatch:      # دستی اجرا شود
